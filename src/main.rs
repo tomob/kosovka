@@ -21,7 +21,10 @@ enum Field {
 
 impl fmt::Display for Field {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:?}", self)
+        match *self {
+            Field::Empty => write!(f, " "),
+            Field::M(x)  => write!(f, "{}", x)
+        }
     }
 }
 
@@ -34,22 +37,32 @@ impl Board {
     pub fn new() -> Board {
         Board { fields: [Field::Empty; 9]}
     }
+
+    fn show_line(&self, f: &mut fmt::Formatter, line: usize) -> fmt::Result {
+        write!(f, "   {} | {} | {}",
+               self.fields[line*3],
+               self.fields[line*3 + 1],
+               self.fields[line*3 + 2])
+    }
 }
 
 impl fmt::Display for Board {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:?}", self.fields)
+        try!(write!(f, "123"));
+        try!(self.show_line(f, 0));
+        try!(write!(f, "\n456  --- --- ---\n789"));
+        try!(self.show_line(f, 1));
+        try!(write!(f, "\n     --- --- ---\n   "));
+        self.show_line(f, 2)
     }
 }
 
+type Position = i32;
+
 
 fn main() {
-    let f1 : Field = Field::Empty;
-    let f2 : Field = Field::M(Mark::X);
-    let f3 : Field = Field::M(Mark::O);
-
     let b : Board = Board::new();
 
-    println!("f1: {}, f2: {}, f3: {}", f1, f2, f3);
-    println!("Board: {}", &b)
+    println!("{}", &b);
+    println!("{:?}", &b);
 }
