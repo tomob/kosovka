@@ -1,6 +1,6 @@
 [package]
-name = "rust-game-engine"
+name = "kosovka"
 version = "0.1.0"
-authors = ["tomo <yubizume@gmail.com>"]
+authors = ["Tomo <yubizume@gmail.com>"]
 
 [dependencies]
