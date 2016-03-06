@@ -1,7 +1,7 @@
 extern crate core;
 use core::fmt;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 enum Mark {X, O}
 
 impl fmt::Display for Mark {
@@ -19,7 +19,7 @@ impl Mark {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 enum Field {
     Empty,
     M(Mark)
@@ -34,7 +34,7 @@ impl fmt::Display for Field {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 struct Board {
     fields: [Field; 9]
 }
@@ -59,7 +59,7 @@ impl Board {
      */
     pub fn play(&self, mark: Mark, position: Position) -> Board {
         let mut new_fields = self.fields; // Copies the array
-        new_fields[position+1] = Field::M(mark);
+        new_fields[position - 1] = Field::M(mark);
         Board { fields: new_fields }
     }
 }
@@ -86,4 +86,23 @@ fn main() {
     println!("{:?}", &b);
     println!("{} {}", x, x.next());
     println!("{}", b.play(Mark::X, 1));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{Mark, Field, Board};
+
+    #[test]
+    fn test_next() {
+        assert_eq!(Mark::X, Mark::O.next());
+        assert_eq!(Mark::O, Mark::X.next());
+    }
+
+    #[test]
+    fn test_play() {
+        let b1 = Board::new();
+        let b2 = b1.play(Mark::X, 1);
+
+        assert_eq!(Field::M(Mark::X), b2.fields[0]);
+    }
 }
