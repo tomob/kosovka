@@ -2,14 +2,20 @@ extern crate core;
 use core::fmt;
 
 #[derive(Debug, Copy, Clone)]
-enum Mark {
-    X,
-    O
-}
+enum Mark {X, O}
 
 impl fmt::Display for Mark {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{:?}", self)
+    }
+}
+
+impl Mark {
+    fn next(&self) -> Mark {
+        match *self {
+            Mark::X => Mark::O,
+            Mark::O => Mark::X
+        }
     }
 }
 
@@ -62,7 +68,9 @@ type Position = i32;
 
 fn main() {
     let b : Board = Board::new();
+    let x = Mark::X;
 
     println!("{}", &b);
     println!("{:?}", &b);
+    println!("{} {}", x, x.next());
 }
