@@ -50,6 +50,18 @@ impl Board {
                self.fields[line*3 + 1],
                self.fields[line*3 + 2])
     }
+
+    /**
+     * Positions:
+     * 123
+     * 456
+     * 789
+     */
+    pub fn play(&self, mark: Mark, position: Position) -> Board {
+        let mut new_fields = self.fields; // Copies the array
+        new_fields[position+1] = Field::M(mark);
+        Board { fields: new_fields }
+    }
 }
 
 impl fmt::Display for Board {
@@ -63,7 +75,7 @@ impl fmt::Display for Board {
     }
 }
 
-type Position = i32;
+type Position = usize;
 
 
 fn main() {
@@ -73,4 +85,5 @@ fn main() {
     println!("{}", &b);
     println!("{:?}", &b);
     println!("{} {}", x, x.next());
+    println!("{}", b.play(Mark::X, 1));
 }
