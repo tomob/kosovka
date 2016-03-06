@@ -34,6 +34,13 @@ impl fmt::Display for Field {
     }
 }
 
+type Line = (Field, Field, Field);
+type LinePos = (usize, usize, usize);
+
+const INDICES : [LinePos; 8] = [(0, 1, 2), (3, 4, 5), (6, 7, 8), // horizontal
+                                     (0, 3, 6), (1, 4, 7), (2, 5, 8), // vertical
+                                     (0, 4, 8), (2, 4, 6)];           // diagonal
+
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 struct Board {
     fields: [Field; 9]
@@ -62,6 +69,26 @@ impl Board {
         new_fields[position - 1] = Field::M(mark);
         Board { fields: new_fields }
     }
+
+    /// Evaluates a board position:
+    /// +1000 is a winning position
+    /// -1000 is a loosing position
+    ///     0 is a balance between both players
+    // pub fn evaluate(&self) -> i32 {
+    // }
+
+    fn split_lines(&self) -> Vec<Line> {
+        INDICES.iter()
+               .map(|x: &LinePos| self.line(*x))
+               .collect()
+    }
+
+    fn line(&self, line_indices: LinePos) -> Line {
+        (self.fields[line_indices.0],
+         self.fields[line_indices.1],
+         self.fields[line_indices.2])
+    }
+
 }
 
 impl fmt::Display for Board {
@@ -90,7 +117,7 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-    use super::{Mark, Field, Board};
+    use super::{Mark, Field, Board, INDICES};
 
     #[test]
     fn test_next() {
@@ -104,5 +131,34 @@ mod tests {
         let b2 = b1.play(Mark::X, 1);
 
         assert_eq!(Field::M(Mark::X), b2.fields[0]);
+    }
+
+    #[test]
+    fn test_line() {
+        use Mark::*;
+        use Field::*;
+        let b = Board::new().play(X, 1).play(O, 9);
+
+        assert_eq!((M(X),  Empty, Empty), b.line(INDICES[0]));
+        assert_eq!((Empty, Empty, Empty), b.line(INDICES[1]));
+        assert_eq!((Empty, Empty, M(O) ), b.line(INDICES[2]));
+        assert_eq!((M(X),  Empty, Empty), b.line(INDICES[3]));
+        assert_eq!((Empty, Empty, Empty), b.line(INDICES[4]));
+        assert_eq!((Empty, Empty, M(O) ), b.line(INDICES[5]));
+        assert_eq!((M(X),  Empty, M(O) ), b.line(INDICES[6]));
+        assert_eq!((Empty, Empty, Empty), b.line(INDICES[7]));
+    }
+
+    #[test]
+    fn split_lines() {
+        use Mark::*;
+        use Field::*;
+        let b = Board::new().play(X, 1).play(O, 9);
+
+        let lines = b.split_lines();
+        assert_eq!(8, lines.len());
+        assert_eq!((M(X),  Empty, Empty), lines[0]);
+        assert_eq!((Empty, Empty, Empty), lines[1]);
+        assert_eq!((M(X),  Empty, M(O) ), lines[6]);
     }
 }
